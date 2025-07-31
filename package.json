@@ -12,9 +12,6 @@
     "dev:api": "ts-node src/api/server.ts",
     "dev:worker": "ts-node src/workers/main.worker.ts",
     "dev:watcher": "ts-node src/workers/watcher.worker.ts",
-    "start:api": "node dist/api/server.js",
-    "start:worker": "node dist/workers/main.worker.js",
-    "start:watcher": "node dist/workers/watcher.worker.js",
     "build": "tsc"
   },
   "dependencies": {
