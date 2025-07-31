@@ -1,0 +1,52 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: temporalpass
+      POSTGRES_DB: freightdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  temporal:
+    image: temporalio/auto-setup:1.25
+    container_name: temporal
+    depends_on:
+      - postgres
+    ports:
+      - "7233:7233"
+      - "8233:8233"
+    environment:
+      - DB=postgres12
+      - DB_PORT=5432
+      - POSTGRES_USER=user
+      - POSTGRES_PWD=pass
+      - POSTGRES_SEEDS=postgres
+      - POSTGRES_DB=freightdb
+
+  temporal-ui:
+    image: temporalio/ui:latest
+    depends_on:
+      - temporal
+    environment:
+      - TEMPORAL_ADDRESS=temporal:7233
+    ports:
+      - "8080:8080"
+
+  temporal-admin-tools:
+    image: temporalio/admin-tools:1.25
+    container_name: temporal-admin-tools
+    stdin_open: true
+    tty: true
+    depends_on:
+      - temporal
+    environment:
+      - TEMPORAL_CLI_ADDRESS=temporal:7233
+
+volumes:
+  pgdata:
