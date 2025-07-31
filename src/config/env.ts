@@ -15,4 +15,8 @@ export const ENV = {
   API: {
     PORT: Number(process.env.PORT) || 3000,
   },
+  WORKFLOW: {
+    TRAFFIC: 'monitor-traffic-workflow',
+    NOTIFICATION: 'process-notifications-workflow',
+  },
 };

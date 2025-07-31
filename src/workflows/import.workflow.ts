@@ -11,8 +11,6 @@ const { alreadyImported, parseAndSaveCsv, markAsImported } = proxyActivities<typ
  * Skips import if the file has already been processed.
  */
 export async function importDeliveriesWorkflow(filePath: string): Promise<void> {
-  console.info('== in the workflow');
-
   if (!filePath) {
     throw new Error('[Import Workflow] filePath is required.');
   }
@@ -27,9 +25,9 @@ export async function importDeliveriesWorkflow(filePath: string): Promise<void> 
     await parseAndSaveCsv(filePath);
     await markAsImported(filePath);
 
-    console.info(`[Import Workflow] ✅ Successfully imported deliveries from ${filePath}`);
+    console.info(`[Import Workflow] Successfully imported deliveries from ${filePath}`);
   } catch (err: any) {
-    console.error(`[Import Workflow] ❌ Failed to import ${filePath}: ${err.message}`);
+    console.error(`[Import Workflow] Failed to import ${filePath}: ${err.message}`);
     throw err; // Let Temporal retries handle it
   }
 }

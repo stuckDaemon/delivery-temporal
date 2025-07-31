@@ -1,4 +1,3 @@
-import path from 'path';
 import { Worker } from '@temporalio/worker';
 import { connectDb } from '../config/database';
 
@@ -20,8 +19,6 @@ async function runWorker() {
         ...require('../activities/ai.activity'),
         ...require('../activities/notification.activity'),
       },
-      // If you have direct activity functions, you can register them here
-      // activities: require('./activities'),
     });
 
     console.log(`🚀 Worker ready [queue=${TASK_QUEUE}, pid=${process.pid}]`);
@@ -43,7 +40,7 @@ async function runWorker() {
 
     await worker.run();
   } catch (err: any) {
-    console.error(`[Worker] ❌ Fatal error: ${err.message}`, err);
+    console.error(`[Worker] Fatal error: ${err.message}`, err);
     process.exit(1);
   }
 }

@@ -24,7 +24,6 @@ export async function getDeliveriesNeedingTrafficCheck(): Promise<Delivery[]> {
   try {
     const deliveries = await Delivery.findAll({
       where: { delivered: false },
-      attributes: ['id', 'origin', 'destination', 'contact'], // keep small
     });
 
     console.info(`[DB Activity] traffic-check: ${deliveries.length} deliveries`);
@@ -33,6 +32,7 @@ export async function getDeliveriesNeedingTrafficCheck(): Promise<Delivery[]> {
       origin: d.origin,
       destination: d.destination,
       contact: d.contact,
+      lastKnownDelay: d.lastKnownDelay,
     })) as Delivery[];
   } catch (err: any) {
     console.error(`[DB Activity] getDeliveriesNeedingTrafficCheck failed: ${err.message}`);

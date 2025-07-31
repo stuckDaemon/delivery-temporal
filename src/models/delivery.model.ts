@@ -1,4 +1,4 @@
-import { Column, DataType, Model, Table } from 'sequelize-typescript';
+import { Column, DataType, Default, Model, PrimaryKey, Table } from 'sequelize-typescript';
 
 @Table({
   tableName: 'deliveries',
@@ -9,6 +9,11 @@ import { Column, DataType, Model, Table } from 'sequelize-typescript';
   deletedAt: 'deletedAt',
 })
 export class Delivery extends Model {
+  @PrimaryKey
+  @Default(DataType.UUIDV4)
+  @Column(DataType.UUID)
+  declare id: string;
+
   @Column({
     type: DataType.STRING,
     allowNull: false,
