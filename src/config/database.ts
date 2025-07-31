@@ -1,6 +1,7 @@
 import { Sequelize } from 'sequelize-typescript';
 import { ENV } from './env';
 import { Delivery } from '../models/delivery.model';
+import { Notification } from '../models/notification.model';
 
 export const sequelize = new Sequelize({
   dialect: 'postgres',
@@ -10,7 +11,7 @@ export const sequelize = new Sequelize({
   password: ENV.DB.PASSWORD,
   database: ENV.DB.NAME,
   logging: false,
-  models: [Delivery],
+  models: [Delivery, Notification],
 });
 
 /**
