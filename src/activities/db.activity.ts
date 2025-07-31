@@ -20,9 +20,7 @@ export async function updateDeliveryDelay(deliveryId: string, delayMinutes: numb
  * Fetch deliveries still needing traffic checks.
  * Only returns indexed, minimal fields to reduce load.
  */
-export async function getDeliveriesNeedingTrafficCheck(): Promise<
-  Array<Pick<Delivery, 'id' | 'origin' | 'destination' | 'contact'>>
-> {
+export async function getDeliveriesNeedingTrafficCheck(): Promise<Delivery[]> {
   try {
     const deliveries = await Delivery.findAll({
       where: { delivered: false },
@@ -35,7 +33,7 @@ export async function getDeliveriesNeedingTrafficCheck(): Promise<
       origin: d.origin,
       destination: d.destination,
       contact: d.contact,
-    }));
+    })) as Delivery[];
   } catch (err: any) {
     console.error(`[DB Activity] getDeliveriesNeedingTrafficCheck failed: ${err.message}`);
     throw err; // Let Temporal retry

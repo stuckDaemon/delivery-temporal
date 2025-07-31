@@ -3,7 +3,6 @@ import { Worker } from '@temporalio/worker';
 import { connectDb } from '../config/database';
 
 const TASK_QUEUE = process.env.TEMPORAL_TASK_QUEUE || 'FREIGHT_TASK_QUEUE';
-const WORKFLOWS_PATH = path.resolve(__dirname, './workflows');
 
 async function runWorker() {
   try {
@@ -12,8 +11,15 @@ async function runWorker() {
     console.log(`[Worker] ✅ Database connection established.`);
 
     const worker = await Worker.create({
-      workflowsPath: WORKFLOWS_PATH,
+      workflowsPath: require.resolve('../workflows'), // resolves correctly for webpack
       taskQueue: TASK_QUEUE,
+      activities: {
+        ...require('../activities/db.activity'),
+        ...require('../activities/import.activity'),
+        ...require('../activities/traffic.activity'),
+        ...require('../activities/ai.activity'),
+        ...require('../activities/notification.activity'),
+      },
       // If you have direct activity functions, you can register them here
       // activities: require('./activities'),
     });

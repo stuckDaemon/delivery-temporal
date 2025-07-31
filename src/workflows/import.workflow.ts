@@ -11,6 +11,8 @@ const { alreadyImported, parseAndSaveCsv, markAsImported } = proxyActivities<typ
  * Skips import if the file has already been processed.
  */
 export async function importDeliveriesWorkflow(filePath: string): Promise<void> {
+  console.info('== in the workflow');
+
   if (!filePath) {
     throw new Error('[Import Workflow] filePath is required.');
   }

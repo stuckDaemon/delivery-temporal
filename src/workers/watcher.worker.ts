@@ -3,9 +3,12 @@ import path from 'path';
 import fs from 'fs/promises';
 import { Connection, Client } from '@temporalio/client';
 
-const IMPORT_FOLDER = path.resolve('./imports/deliveries');
+const IMPORT_FOLDER = path.resolve(__dirname, '../imports/deliveries');
 const TASK_QUEUE = process.env.TEMPORAL_TASK_QUEUE || 'FREIGHT_TASK_QUEUE';
 const WORKFLOW_NAME = 'importDeliveriesWorkflow';
+
+// Files we want to ignore completely
+const IGNORED_FILES = ['.DS_Store'];
 
 /**
  * Ensures the import directory exists.
@@ -20,32 +23,30 @@ async function ensureImportFolder() {
 async function handleNewFile(filePath: string, client: Client) {
   const baseName = path.basename(filePath);
 
+  // Ignore unwanted files
+  if (IGNORED_FILES.includes(baseName)) {
+    console.log(`[Watcher] Ignoring file: ${baseName}`);
+    return;
+  }
+
   // Avoid re-processing
   if (baseName.startsWith('imported_')) {
-    console.log(`⏩ Skipping already imported file: ${baseName}`);
+    console.log(`[Watcher] Skipping already imported file: ${baseName}`);
     return;
   }
 
-  console.log(`📂 New file detected: ${baseName}`);
-
-  const renamedPath = path.join(IMPORT_FOLDER, `imported_${baseName}`);
-
-  try {
-    await fs.rename(filePath, renamedPath);
-  } catch (err) {
-    console.error(`❌ Failed to rename ${baseName}:`, err);
-    return;
-  }
+  console.log(`[Watcher] New file detected: ${baseName}`);
+  const originFile = path.join(IMPORT_FOLDER, `${baseName}`);
 
   try {
-    console.log(`🌀 Starting workflow for ${renamedPath}`);
+    console.log(`[Watcher] Starting workflow for ${baseName}`);
     await client.workflow.start(WORKFLOW_NAME, {
       taskQueue: TASK_QUEUE,
-      args: [renamedPath],
+      args: [originFile],
       workflowId: `import-${Date.now()}`, // unique per import
     });
   } catch (err) {
-    console.error(`❌ Failed to start workflow for ${renamedPath}:`, err);
+    console.error(`[Watcher] Failed to start workflow for ${baseName}:`, err);
   }
 }
 
@@ -64,11 +65,11 @@ async function startWatcher() {
     try {
       await handleNewFile(filePath, client);
     } catch (err) {
-      console.error(`❌ Error processing file ${filePath}:`, err);
+      console.error(`[Watcher] Error processing file ${filePath}:`, err);
     }
   });
 
-  console.log(`👀 Watching folder: ${IMPORT_FOLDER}`);
+  console.log(`[Watcher] Watching folder: ${IMPORT_FOLDER}`);
 
   // Graceful shutdown
   const shutdown = async (signal: string) => {
@@ -88,6 +89,6 @@ async function startWatcher() {
 }
 
 startWatcher().catch((err) => {
-  console.error(`❌ Watcher failed:`, err);
+  console.error(`[Watcher] Watcher failed:`, err);
   process.exit(1);
 });

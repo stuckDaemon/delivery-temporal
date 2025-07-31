@@ -215,7 +215,7 @@ Create `imports/deliveries/test.csv`:
 
 ```csv
 customerName,contact,origin,destination
-Test Customer,+15550001111,8.68,45.07,7.68,45.07
+Test Customer,+15550001111,8.68,45.07
 ```
 
 ---
